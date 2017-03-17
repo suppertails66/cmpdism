@@ -1,6 +1,12 @@
 cmpdism: multi-architecture comparative disassembler
 
-cmpdism is a "comparative disassembler" targeting multiple CPU architectures. Its chief advantage over other disassemblers is that it is specially designed to be able to compare the disassembled code of different revisions of a program and output the differences, accounting for possible differences in addresses and constants between the revisions. This makes it useful for comparing prototype and final versions of a program, or finding differences between different regional releases.
+cmpdism is a "comparative disassembler" targeting multiple CPU architectures. 
+Its chief advantage over other disassemblers is that it is specially designed to 
+be able to compare the disassembled code of different revisions of a program and 
+output the differences, accounting for possible differences in addresses and 
+constants between the revisions. This makes it useful for comparing prototype 
+and final versions of a program, or finding differences between different 
+regional releases.
 
 Currently, the following architectures are supported:
 
@@ -19,32 +25,67 @@ Currently, the following architectures are supported:
                    *          Build Instructions          *
                    ****************************************
 
-Have gcc, run make. This is a bog-standard C program with no external dependencies, so you should be able to compile it on anything without too much trouble.
+Have gcc, run make. This is a bog-standard C program with no external 
+dependencies, so you should be able to compile it on anything without too much 
+trouble.
 
                    ****************************************
                    *                Usage                 *
                    ****************************************
 
-For basic help and options, plus a list of available disassembly architectures, run cmpdism with no arguments.
+For basic help and options, plus a list of available disassembly architectures, 
+run cmpdism with no arguments.
 
-cmpdism's main use is comparing two different revisions of compiled program code. Let's say we want to compare file1.bin, which contains some binary MOS Technologies 6502 code, to file2.bin, which contains binary code assembled from a slightly modified version of the same code that produced file1.bin.
+cmpdism's main use is comparing two different revisions of compiled program 
+code. Let's say we want to compare file1.bin, which contains some binary MOS 
+Technologies 6502 code, to file2.bin, which contains binary code assembled from 
+a slightly modified version of the same code that produced file1.bin.
 
 The most basic comparison is done like this:
 
   cmpdism 6502 -i1 file1.bin -i2 file2.bin
 
-This will disassemble both files and print to stdout a two-column comparison showing the disassemblies and differences between them, with file1.bin on the left and file2.bin on the right.
+This will disassemble both files and print to stdout a two-column comparison 
+showing the disassemblies and differences between them, with file1.bin on the 
+left and file2.bin on the right.
 
-Several symbols are used in the comparison to show how the code has changed:
+More typically, you'll want to explicitly specify the -r and -m options 
+(explained below) as something appropriate for your particular files:
+
+  cmpdism 6502 -i1 file1.bin -i2 file2.bin -r 50 -m 1024
+
+The program can also be run with only one input file to produce a simple 
+disassembly:
+
+  cmpdism 6502 -i1 file1.bin
+
+For a disassembly comparison, several symbols are used to show how the code has 
+changed:
 
 * A plus (+) indicates code that was added to the second file.
 * A minus (-) indicates code that was removed from the second file.
-* A star (*) indicates code that was transformed (changed) from the first file to the second file.
+* A star (*) indicates code that was transformed (changed) from the first file 
+to the second file.
 
-Thw two most important disassembly options are -r and -m. Using them effectively requires some understanding of how the program works, so here's a basic explanation:
+Thw two most important disassembly options are -r and -m. Using them effectively 
+requires some understanding of how the program works, so here's a basic 
+explanation:
 
-To deal with cases where code was added or removed in the later version, the program searches forward whenever it detects an opcode mismatch, trying to find a new positions where the two code revisions realign. The -r parameter controls the number of ops that must be sequentially matched in order for the opcodes to be considered "realigned". The -m parameter controls the number of ops that the program will search forward before concluding that no match exists for the current code (thus marking it as "changed" rather than "added" or "removed").
+To deal with cases where code was added or removed in the later version, the 
+program searches forward whenever it detects an opcode mismatch, trying to find 
+a new positions where the two code revisions realign. The -r parameter controls 
+the number of ops that must be sequentially matched in order for the opcodes to 
+be considered "realigned". The -m parameter controls the number of ops that the 
+program will search forward before concluding that no match exists for the 
+current code (thus marking it as "changed" rather than "added" or "removed").
 
 Essentially:
-* A higher -r value makes realignment more stringent. This reduces the risk of the disassemblies become mistakenly realigned at an incorrect position, but makes it more likely that a series of small changes will be misdetected as one big block of changes.
-* A higher -m value will better detect cases where a lot of code was added or removed. It increases the risk of accidental misalignment.
+* A higher -r value makes realignment more stringent. This reduces the risk of 
+the disassemblies become mistakenly realigned at an incorrect position, but 
+makes it more likely that a series of small changes will be misdetected as one 
+big block of changes.
+* A higher -m value will better detect cases where a lot of code was added or 
+removed. It increases the risk of accidental misalignment.
+
+If you're getting massive blocks of + and - sections with a very small 
+"alignment" in-between, set your -r value higher.

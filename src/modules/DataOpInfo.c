@@ -22,7 +22,7 @@ OpcodeSimilarity DataOpcompare(Opcode* obj, Opcode* other,
   
   if (thisByte == otherByte) return opcodeSimilaritySame;
   
-  return opcodeSimilarityNone;
+  return opcodeSimilarityDistinct;
 }
 
 unsigned int DataOpreadStep(Opcode* obj, BufferStream* stream,

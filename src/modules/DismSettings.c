@@ -15,10 +15,11 @@ void initDismSettings(DismSettings* obj) {
   
   obj->firstFileExternalCodeMap = NULL;
   obj->secondFileExternalCodeMap = NULL;
+  obj->requiredCodeMapResumeOps = 30;
   
   obj->loadAddress = NULL;
   
-  obj->intelligentCodeDetection = 1;
+  obj->intelligentCodeDetection = 0;
   
   obj->singleSrcAddrW = 6;
   obj->singleShowRaw = 1;
@@ -70,6 +71,9 @@ void fillDismSettings(DismSettings* obj, int argc, char* argv[]) {
       obj->singleShowRaw = 1;
       obj->dualShowRaw = 1;
     }
+    else if (strcmp(argv[i], "--generate-codemaps") == 0) {
+      obj->intelligentCodeDetection = 1;
+    }
   }
   
   /* 1-argument parameters */
@@ -110,6 +114,9 @@ void fillDismSettings(DismSettings* obj, int argc, char* argv[]) {
     }
     else if (strcmp(argv[i], "--dual-separation") == 0) {
       obj->dualSeparationW = cStringToInt(argv[i + 1]);
+    }
+    else if (strcmp(argv[i], "--codemap-seq-req") == 0) {
+      obj->requiredCodeMapResumeOps = cStringToInt(argv[i + 1]);
     }
   }
   

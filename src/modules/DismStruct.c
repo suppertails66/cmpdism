@@ -3,7 +3,8 @@
 
 void initDismStruct(DismStruct* obj) {
   obj->stream = allocBufferStream();
-  obj->codeMap = allocCodeMap();
+/*  obj->codeMap = allocCodeMap(); */
+  obj->codeMap = NULL;
   initVectorOpcode(&(obj->opcodes));
 }
 
@@ -15,7 +16,7 @@ DismStruct* allocDismStruct() {
 
 void freeDismStruct(DismStruct* obj) {
   freeBufferStream(obj->stream);
-  freeCodeMap(obj->codeMap);
+  if (obj->codeMap != NULL) freeCodeMap(obj->codeMap);
   obj->opcodes.destroyAll(&(obj->opcodes));
 
   free(obj);

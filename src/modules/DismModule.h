@@ -97,6 +97,9 @@ typedef struct DismModule {
   void (*printComparedDisassembly)(struct DismModule* obj, String* dst,
                                    DismStruct* firstDismStruct,
                                    DismStruct* secondDismStruct);
+  
+  void (*generateCodeMap)(struct DismModule* obj, DismStruct* dismStruct,
+                          DismSettings config);
                                    
   /**
    * Determines realignment positions and type of two Opcode streams.
@@ -159,6 +162,9 @@ typedef struct DismModule {
                  
   int (*byteAlignment)(struct DismModule* obj);
   
+  int (*matchSequentialOps)(struct DismModule* obj, int numOps,
+                            DismStruct* dismStruct);
+  
   /**
    * Enables automatic op argument collation if set.
    *
@@ -216,6 +222,9 @@ void DismModuleprintDisassembly(DismModule* obj, String* dst,
 void DismModuleprintComparedDisassembly(DismModule* obj, String* dst,
                                 DismStruct* firstDismStruct,
                                 DismStruct* secondDismStruct);
+  
+void DismModulegenerateCodeMap(DismModule* obj, DismStruct* dismStruct,
+                        DismSettings config);
 
 OpcodeAlignmentData DismModuledetectNewAlignment(struct DismModule* obj,
                                  DismStruct* dismStructA,
@@ -261,6 +270,9 @@ int DismModulematchOp(DismModule* obj, DismStruct* dismStruct,
                       OpInfo* opInfo, unsigned int remaining);
                  
 int DismModulebyteAlignment(DismModule* obj);
+  
+int DismModulematchSequentialOps(DismModule* obj, int numOps,
+                          DismStruct* dismStruct);
                       
 void DismModuledestroy(DismModule* obj);
                       

@@ -21,13 +21,12 @@ void DismModulerun(DismModule* obj, DismSettings config) {
   firstDismStruct->settings = config;
   firstDismStruct->stream->load(firstDismStruct->stream,
                                 config.firstFile);
-                              
-  /* Disassemble the first file */
-  obj->disassemble(obj, firstDismStruct,
-                   config.firstFileStartOffset, config.firstFileEndOffset);
   
   /* One-file mode */
   if (config.secondFile == NULL) {
+    /* Disassemble the first file */
+    obj->disassemble(obj, firstDismStruct,
+                     config.firstFileStartOffset, config.firstFileEndOffset);
     
     /* Print disassembly */
     String disassemblyString;
@@ -43,6 +42,22 @@ void DismModulerun(DismModule* obj, DismSettings config) {
     secondDismStruct->settings = config;
     secondDismStruct->stream->load(secondDismStruct->stream,
                                   config.secondFile);
+    
+    /* Generate code maps if needed */
+    if (config.intelligentCodeDetection) {
+      obj->generateCodeMap(obj, firstDismStruct, config);
+      obj->generateCodeMap(obj, secondDismStruct, config);
+    }
+    
+/*    FILE* first = fopen("codemap1.bin", "wb");
+    fwrite((char*)(firstDismStruct->codeMap->data(firstDismStruct->codeMap)),
+           sizeof(char),
+           firstDismStruct->codeMap->size(firstDismStruct->codeMap),
+           first); */
+                              
+    /* Disassemble the first file */
+    obj->disassemble(obj, firstDismStruct,
+                     config.firstFileStartOffset, config.firstFileEndOffset);
                               
     /* Disassemble the second file */
     obj->disassemble(obj, secondDismStruct,
@@ -71,6 +86,81 @@ void DismModuleparse(DismModule* obj, DismStruct* dismStruct) {
   
 }
 
+void DismModulegenerateCodeMap(DismModule* obj, DismStruct* dismStruct,
+                        DismSettings config) {
+    
+  unsigned int start = 0;
+  unsigned int end = -1;
+  BufferStream* stream = dismStruct->stream;
+  VectorOpcode* opcodes = &(dismStruct->opcodes);
+  
+  CodeMap* codeMap = allocCodeMap();
+  codeMap->resize(codeMap, stream->size(stream));
+  /* Assume everything is code to begin with.
+     This is extremely important -- otherwise, readNextOp() will reject
+     everything (because it's marked as data) */
+  codeMap->fill(codeMap, 0xFF);
+  
+  dismStruct->codeMap = codeMap;
+/*  DismSettings* config = &(dismStruct->settings); */
+  
+  /* Examine the specified portion of the file */
+  unsigned int limit = (end != -1) ? end : stream->size(stream);
+  stream->seek(stream, start);
+  /* Generate opcodes until we reach the end of the specified section */
+  while (stream->tell(stream) < limit) {
+    obj->readNextOp(obj, dismStruct, (limit - stream->tell(stream)));
+    
+    /* Did we generate a data opcode? */
+    Opcode* lastOp = opcodes->getP(opcodes, opcodes->size(opcodes) - 1);
+    if (lastOp->info(lastOp)->id == DATA_OP_ID) {
+      /* Go backwards through the opcodes until we reach the start or
+         find something that isn't flagged as suspicious; we will consider
+         this the last valid instruction.
+         This also covers any issues of byte alignment. */
+      int lastGoodOp;
+      Opcode* lastGoodOpP = NULL;
+      for (lastGoodOp = opcodes->size(opcodes) - 2;
+           lastGoodOp >= 0;
+           lastGoodOp--) {
+        lastGoodOpP = opcodes->getP(opcodes, lastGoodOp);
+        OpInfo* opInfo = lastGoodOpP->info(lastGoodOpP);
+        if ((opInfo->id !=  DATA_OP_ID)
+            && !(opInfo->flags & opFlagsSuspicious)) break;
+      }
+      
+      /* Mark the discovered block as data */
+      int blockEnd = lastOp->pos(lastOp) + 1;
+      int blockStart = (lastGoodOpP == NULL) ? 0
+          : lastGoodOpP->pos(lastGoodOpP);
+      memset(codeMap->data(codeMap) + blockStart, 0x00, blockEnd - blockStart);
+      
+      /* We're now in a data block.
+         Everything we see should be treated as data until we encounter
+         the specified number of consecutive valid opcodes. */
+      
+      /* Match the needed number of opcodes */
+      while ((stream->tell(stream) < limit)
+             && !(obj->matchSequentialOps(obj, config.requiredCodeMapResumeOps,
+                                       dismStruct))) {
+        
+      }
+      
+      /* We're now back at a code section (or done, if we reached the end
+         of the stream */
+    }
+    /* Op was valid: mark as code */
+    else {
+      int blockEnd = stream->pos(stream);
+      int blockStart = lastOp->pos(lastOp);
+      memset(codeMap->data(codeMap) + blockStart, 0xFF, blockEnd - blockStart);
+    }
+  }
+  
+  /* Throw away our invalid opcode stream and reset everything */
+  opcodes->clear(opcodes);
+  stream->seek(stream, 0);
+}
 
 void DismModuledisassemble(DismModule* obj, DismStruct* dismStruct,
                            unsigned int start, unsigned int end) {
@@ -161,6 +251,13 @@ void DismModuleprintComparedDisassembly(DismModule* obj, String* dst,
           tempString.catC(&tempString, " ; !!!");
         }
       }
+      else {
+        OpcodeSimilarity similarity
+          = opcodeA->compare(opcodeA, opcodeB, &(firstDismStruct->settings));
+        if (similarity == opcodeSimilarityDistinct) {
+          tempString.catC(&tempString, " ; ???");
+        }
+      }
       
 /*      dst->catString(dst, &tempString);
       dst->catC(dst, "\n"); */
@@ -233,7 +330,7 @@ void DismModuleprintComparedDisassembly(DismModule* obj, String* dst,
         Opcode* opcodeBNew = opcodesB->getP(opcodesB, iB + i);
       
         tempString.clear(&tempString);
-        tempString.catC(&tempString, "X ");
+        tempString.catC(&tempString, "* ");
         opcodeANew->print(opcodeANew, &tempString, firstDismStruct->stream,
                       &(firstDismStruct->settings),
                       firstDismStruct->settings.dualSrcAddrW,
@@ -550,13 +647,23 @@ void DismModulereadNextOp(DismModule* obj, DismStruct* dismStruct,
   
   /* Check each set of supplied opcodes */
   int success = 0;
-  unsigned int limit = obj->opInfoArrays.size(&(obj->opInfoArrays));
-  unsigned int i;
-  for (i = 0; i < limit; i++) {
-    success = obj->tryOpRead(obj, dismStruct,
-                             obj->opInfoArrays.get(&(obj->opInfoArrays), i),
-                             remaining);
-    if (success) break;
+  /* If we're using a codemap and this byte is marked as data, don't
+     try to read an opcode */
+  if ((dismStruct->codeMap != NULL)
+      && !(dismStruct->codeMap->get(dismStruct->codeMap,
+                                  dismStruct->stream->pos(
+                                      dismStruct->stream)))) {
+    
+  }
+  else {
+    unsigned int limit = obj->opInfoArrays.size(&(obj->opInfoArrays));
+    unsigned int i;
+    for (i = 0; i < limit; i++) {
+      success = obj->tryOpRead(obj, dismStruct,
+                               obj->opInfoArrays.get(&(obj->opInfoArrays), i),
+                               remaining);
+      if (success) break;
+    }
   }
   
   /* No matching op found: next byte must be data */
@@ -564,6 +671,7 @@ void DismModulereadNextOp(DismModule* obj, DismStruct* dismStruct,
     /* Enforce byte alignment by padding with multiple data ops if needed */
     int streamPos = dismStruct->stream->pos(dismStruct->stream);
     int realignment = obj->byteAlignment_ - (streamPos % obj->byteAlignment_);
+    unsigned int i;
     for (i = 0; i < realignment; i++) {
       Opcode opcode;
       initOpcode(&opcode);
@@ -669,6 +777,45 @@ int DismModulematchOp(DismModule* obj, DismStruct* dismStruct,
 int DismModulebyteAlignment(DismModule* obj) {
   return obj->byteAlignment_;
 }
+  
+int DismModulematchSequentialOps(DismModule* obj, int numOps,
+                          DismStruct* dismStruct) {
+  BufferStream* stream = dismStruct->stream;
+  VectorOpcode* opcodes = &(dismStruct->opcodes);
+  CodeMap* codeMap = dismStruct->codeMap;
+/*  DismSettings* config = &(dismStruct->settings); */
+  
+  unsigned int limit = stream->size(stream);
+  int startingPos = stream->pos(stream);
+  
+  int count = 0;
+  while (count < numOps) {
+    /* Fail if we reach the end of the stream */
+    if (stream->tell(stream) >= limit) return 0;
+    
+    obj->readNextOp(obj, dismStruct, (limit - stream->tell(stream)));
+    
+    Opcode* lastOp = opcodes->getP(opcodes, opcodes->size(opcodes) - 1);
+    if ((lastOp->info(lastOp)->id == DATA_OP_ID)) {
+      /* We were wrong: everything we just read was actually data */
+      memset(codeMap->data(codeMap) + startingPos, 0x00,
+             stream->pos(stream) - startingPos);
+      return 0;
+    }
+    
+    /* Mark read op as code */
+    memset(codeMap->data(codeMap) + lastOp->pos(lastOp), 0xFF,
+           stream->pos(stream) - lastOp->pos(lastOp));
+    
+    /* Do not count op toward total if it's flagged as suspicious */
+    if (!(lastOp->info(lastOp)->flags & opFlagsSuspicious)) {
+      ++count;
+    }
+  }
+  
+  /* Found enough ops: success */
+  return 1;
+}
                       
 void DismModuledestroy(DismModule* obj) {
   obj->opInfoArrays.destroyAll(&obj->opInfoArrays);
@@ -688,6 +835,7 @@ void initDismModule(DismModule* obj) {
   obj->disassemble = DismModuledisassemble;
   obj->printDisassembly = DismModuleprintDisassembly;
   obj->printComparedDisassembly = DismModuleprintComparedDisassembly;
+  obj->generateCodeMap = DismModulegenerateCodeMap;
   obj->detectNewAlignment = DismModuledetectNewAlignment;
   obj->detectOpcodeAddOrRemove = DismModuledetectOpcodeAddOrRemove;
   obj->detectOpcodeAddition = DismModuledetectOpcodeAddition;
@@ -696,6 +844,7 @@ void initDismModule(DismModule* obj) {
   obj->tryOpRead = DismModuletryOpRead;
   obj->matchOp = DismModulematchOp;
   obj->byteAlignment = DismModulebyteAlignment;
+  obj->matchSequentialOps = DismModulematchSequentialOps;
   obj->destroy = DismModuledestroy;
   obj->destroyInternal = DismModuledestroyInternal;
   obj->enableOpArgCollation_ = 1;

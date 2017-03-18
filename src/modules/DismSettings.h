@@ -74,6 +74,13 @@ typedef struct {
    */
   char* secondFileExternalCodeMap;
   
+  /**
+   * Number of consecutive valid ops required to decide the end of a data
+   * section when generating codemaps.
+   * Ops flagged as suspicious do not count toward this total.
+   */
+  unsigned int requiredCodeMapResumeOps;
+  
   /*---------- PARSE SETTINGS ----------*/
   
   /**

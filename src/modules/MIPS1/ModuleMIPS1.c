@@ -370,18 +370,6 @@ OpcodeSimilarity compareOpcodeMIPS1(Opcode* obj, Opcode* other,
     ),
     compareParameterMIPS1(datA, datB, config, infoString[6], 2)
   );
-  
-/*  printParameterMIPS1(dat, dst, config, infoString[2], 0);
-  printParameterMIPS1(dat, dst, config, infoString[4], 1);
-  printParameterMIPS1(dat, dst, config, infoString[6], 2); */
-  
-/*  if ((datA->srcMode != datB->srcMode)
-      || (datA->dstMode != datB->dstMode)) return opcodeSimilarityNone;
-  
-  return greaterOpDifference(
-    compareOpcodeByModeMIPS1(datA->args, datB->args, datA->srcMode, config),
-    compareOpcodeByModeMIPS1(datA->args, datB->args, datA->dstMode, config)
-  ); */
 }
 
 void printParameterMIPS1(SubDataMIPS1* dat, String* dst, DismSettings* config,
@@ -488,10 +476,7 @@ void ModuleMIPS1destroyInternal(DismModule* obj) {
 
 void initModuleMIPS1(DismModule* obj) {
   initDismModule(obj);
-/*  obj->disassemble = ModuleMIPS1disassemble;
-  obj->tryOpRead = ModuleMIPS1tryOpRead; */
   obj->destroyInternal = ModuleMIPS1destroyInternal;
-/*  obj->data_ = allocModDataMIPS1(); */
   obj->byteAlignment_ = 4;
   obj->reverseReadEndianness_ = 1;
   obj->reverseMatchEndianness_ = 1;

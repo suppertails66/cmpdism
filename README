@@ -22,7 +22,7 @@ Currently, the following architectures are supported:
   * Hitachi SH-2
 
 * Multi-processor instruction sets:
-  * MIPS-I
+  * MIPS-I (coprocessor instructions currently unsupported)
 
                    ****************************************
                    *          Build Instructions          *

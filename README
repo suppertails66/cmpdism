@@ -21,6 +21,9 @@ Currently, the following architectures are supported:
 * SH family:
   * Hitachi SH-2
 
+* Multi-processor instruction sets:
+  * MIPS-I
+
                    ****************************************
                    *          Build Instructions          *
                    ****************************************

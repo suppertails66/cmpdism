@@ -307,7 +307,7 @@ OpcodeSimilarity compareParameterMIPS1(SubDataMIPS1* datA, SubDataMIPS1* datB,
   case 'R':
     {
     return greaterOpDifference(
-      compareConstantMIPS1(datA->third, datB->third, config),
+      compareOffsetMIPS1(datA->third, datB->third, config),
       compareRegisterMIPS1(datA->second, datB->second, config)
     );
     }

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int matchBinaryString(BufferStream* stream, char* str, int remaining) {
+int matchBinaryStringBuffer(char* src, char* str, int remaining) {
   /* Get length of string in bytes and bits */
   int bitLen = strlen(str);
   int byteLen = bitLen / k_bitsPerByte;
@@ -13,14 +13,13 @@ int matchBinaryString(BufferStream* stream, char* str, int remaining) {
   if ((bitLen % 8) != 0) ++byteLen;
 
   /* Make sure enough bytes remain in the stream to match the string */
-/*  if (stream->remaining(stream) < byteLen) return 0; */
   if (remaining < byteLen) return 0;
   
   /* Try to match digits in input string */
   int i;
   int bitPos = 0;
   for (i = 0; i < byteLen; i++) {
-    char c = *(stream->getcur(stream) + i);
+    char c = *(src + i);
     
     /* Check bits in order from highest to lowest */
     int j;
@@ -55,6 +54,10 @@ int matchBinaryString(BufferStream* stream, char* str, int remaining) {
   }
   
   return 1;
+}
+
+int matchBinaryString(BufferStream* stream, char* str, int remaining) {
+  return matchBinaryStringBuffer(stream->getcur(stream), str, remaining);
 }
 
 int binaryStringToInt(const char* str, int len) {

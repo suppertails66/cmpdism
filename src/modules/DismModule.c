@@ -2,6 +2,7 @@
 #include "modules/StringMatcher.h"
 #include "modules/DataOpInfo.h"
 #include "modules/OpArgCollator.h"
+#include "modules/Consts.h"
 #include "util/Logger.h"
 #include <stdlib.h>
 
@@ -168,6 +169,8 @@ void DismModuledisassemble(DismModule* obj, DismStruct* dismStruct,
 /*  DismSettings* config = &(dismStruct->settings);
   VectorOpcode* opcodes = &(dismStruct->opcodes);
   CodeMap* codeMap = dismStruct->codeMap; */
+  
+  /* Reverse endianness if needed */
   
   /* Examine the specified portion of the file */
   unsigned int limit = (end != -1) ? end : stream->size(stream);
@@ -702,31 +705,14 @@ int DismModuletryOpRead(DismModule* obj, DismStruct* dismStruct,
   int i;
   for (i = 0; i < ops.size; i++) {
     if (obj->matchOp(obj, dismStruct, &(ops.array[i]), remaining)) {
-    
-      /* ----------------temporary---------------- */
-/*      if (ops.array[i].generateOpcode == NULL) {
-        printf("%s\n", ops.array[i].name);
-        continue;
-      } */
       
       MapSS* args = NULL;
       if (obj->enableOpArgCollation_) {
-/*        initMapSS(args); */
         args = allocMapSS();
-        collateOpArgs(dismStruct->stream, args, ops.array[i].recString);
+        collateOpArgsFull(dismStruct->stream, args, ops.array[i].recString,
+                          obj->reverseReadEndianness_,
+                          obj->reverseArgumentBitOrder_);
       }
-      
-/*      String findstr;
-      initString(&findstr);
-      findstr.catC(&findstr, "x");
-      String resultstr;
-      initString(&resultstr);
-      AvlTreeStringStringNode* resultN = args.find(&args, findstr);
-      if (resultN != NULL) {
-        printf("%s\n", resultN->value.cStr(&(resultN->value)));
-      }
-      findstr.destroy(&findstr);
-      resultstr.destroy(&resultstr); */
     
       Opcode opcode;
       initOpcode(&opcode);
@@ -752,12 +738,6 @@ int DismModuletryOpRead(DismModule* obj, DismStruct* dismStruct,
         opcode.destroy(&opcode);
       }
       
-      /* Destroy collated args if enabled AND not claimed by op
-         (handled by call to destroy() above */
-/*      if (obj->enableOpArgCollation_ && !result) {
-        freeMapSS(args);
-      } */
-      
       /* If we successfully read an op, we're done */
       if (result) return result;
     }
@@ -769,9 +749,33 @@ int DismModuletryOpRead(DismModule* obj, DismStruct* dismStruct,
   
 int DismModulematchOp(DismModule* obj, DismStruct* dismStruct,
                       OpInfo* opInfo, unsigned int remaining) {
-  return matchBinaryString(dismStruct->stream,
-                                 opInfo->recString,
-                                 remaining);
+  if (obj->reverseMatchEndianness_) {
+    /* If reverse endianness is specified, we need to reverse the
+       endianness of the recognition string so it matches correctly.
+       We can't do this in preprocessing because automatic argument
+       collation requires the original string (due to how it handles
+       endianess itself. */
+     
+    char revbuffer[maxInstructionByteLength * k_bitsPerByte];
+    int revlen = strlen(opInfo->recString);
+    revbuffer[revlen] = 0;
+    
+    int i;
+    int pos = 0;
+    for (i = revlen - k_bitsPerByte; i >= 0; i -= k_bitsPerByte) {
+      memcpy(revbuffer + pos, opInfo->recString + i, k_bitsPerByte);
+      pos += k_bitsPerByte;
+    }
+    
+    return matchBinaryString(dismStruct->stream,
+                                   revbuffer,
+                                   remaining);
+  }
+  else {
+    return matchBinaryString(dismStruct->stream,
+                                   opInfo->recString,
+                                   remaining);
+  }
 }
                  
 int DismModulebyteAlignment(DismModule* obj) {
@@ -849,6 +853,9 @@ void initDismModule(DismModule* obj) {
   obj->destroyInternal = DismModuledestroyInternal;
   obj->enableOpArgCollation_ = 1;
   obj->byteAlignment_ = 1;
+  obj->reverseReadEndianness_ = 0;
+  obj->reverseMatchEndianness_ = 0;
+  obj->reverseArgumentBitOrder_ = 0;
   obj->data_ = NULL;
 }
 

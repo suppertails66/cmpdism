@@ -182,6 +182,10 @@ typedef struct DismModule {
    * 2 = 16-bit alignment, 4 = 32-bit alignment, etc. */
   int byteAlignment_;
   
+  int reverseReadEndianness_;
+  int reverseMatchEndianness_;
+  int reverseArgumentBitOrder_;
+  
   /**
    * Destructor.
    * 

@@ -12,6 +12,8 @@
  */
 int matchBinaryString(BufferStream* stream, char* str, int remaining);
 
+int matchBinaryStringBuffer(char* src, char* str, int remaining);
+
 int binaryStringToInt(const char* str, int len);
 unsigned int binaryStringToUint(const char* str, int len);
 

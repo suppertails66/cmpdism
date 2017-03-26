@@ -6,6 +6,10 @@
 #include "util/Maps.h"
 #include "util/BufferStream.h"
 
+/* Maximum possible recognition string length.
+   Used to size the buffer used for endianness conversions. */
+const extern int maxInstructionByteLength;
+
 /**
  * Collects the parameters of an op into a MapSS using its recognition string.
  * 
@@ -29,9 +33,17 @@
  *
  * @return Number of bytes read from the stream.
  */
+int collateOpArgsFull(BufferStream* src, MapSS* dst, const char* recString,
+                      int reverseEnd, int reverseBits);
+                      
 int collateOpArgs(BufferStream* src, MapSS* dst, const char* recString);
 
+int collateOpArgsBuffer(char* src, MapSS* dst, const char* recString,
+                        int reverseEnd, int );
+
 int getStreamBit(BufferStream* src, int index);
+
+int getBufferBit(char* src, int index);
 
 
 #endif

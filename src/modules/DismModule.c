@@ -220,14 +220,15 @@ void DismModuleprintComparedDisassembly(DismModule* obj, String* dst,
   unsigned int iB = 0;
   
   while ((iA < limit) && (iB < limit)) {
+/*    fprintf(stderr, "%d %d\n", iA, iB); */
     
     Opcode* opcodeA = opcodesA->getP(opcodesA, iA);
     Opcode* opcodeB = opcodesB->getP(opcodesB, iB);
     OpInfo* opInfoA = opcodeA->info(opcodeA);
-    OpInfo* opInfoB = opcodeB->info(opcodeB);
+/*    OpInfo* opInfoB = opcodeB->info(opcodeB); */
     
     /* Are the current Opcodes of the same type? */
-    if (opInfoA->id == opInfoB->id) {
+    if (obj->areOpsSame(obj, opcodeA, opcodeB)) {
       /* Yes: print both, advance both streams, and continue */
       
       tempString.clear(&tempString);
@@ -605,7 +606,8 @@ int DismModulematchSeq(struct DismModule* obj,
     OpInfo* opInfoB = opB->info(opB);
     
     /* If ops are not same type, they're not the same */
-    if (opInfoA->id != opInfoB->id) return 0;
+/*    if (opInfoA->id != opInfoB->id) return 0; */
+    if (!(obj->areOpsSame(obj, opA, opB))) return 0;
     
     /* If both opcodes are data (.db), and their values are different,
        they're not the same */
@@ -830,6 +832,14 @@ void DismModuledestroy(DismModule* obj) {
 void DismModuledestroyInternal(DismModule* obj) {
   
 }
+  
+int DismModuleareOpsSame(DismModule* obj, Opcode* opcodeA, Opcode* opcodeB) {
+  OpInfo* opInfoA = opcodeA->info(opcodeA);
+  OpInfo* opInfoB = opcodeB->info(opcodeB);
+  
+  if (opInfoA->id == opInfoB->id) return 1;
+  return 0;
+}
 
 void initDismModule(DismModule* obj) {
   initVectorOpInfoArray(&(obj->opInfoArrays));
@@ -851,6 +861,7 @@ void initDismModule(DismModule* obj) {
   obj->matchSequentialOps = DismModulematchSequentialOps;
   obj->destroy = DismModuledestroy;
   obj->destroyInternal = DismModuledestroyInternal;
+  obj->areOpsSame = DismModuleareOpsSame;
   obj->enableOpArgCollation_ = 1;
   obj->byteAlignment_ = 1;
   obj->reverseReadEndianness_ = 0;

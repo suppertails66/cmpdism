@@ -186,6 +186,8 @@ typedef struct DismModule {
   int reverseMatchEndianness_;
   int reverseArgumentBitOrder_;
   
+  int (*areOpsSame)(struct DismModule* obj, Opcode* opcodeA, Opcode* opcodeB);
+  
   /**
    * Destructor.
    * 
@@ -281,6 +283,8 @@ int DismModulematchSequentialOps(DismModule* obj, int numOps,
 void DismModuledestroy(DismModule* obj);
                       
 void DismModuledestroyInternal(DismModule* obj);
+  
+int DismModuleareOpsSame(DismModule* obj, Opcode* opcodeA, Opcode* opcodeB);
 
 void initDismModule(DismModule* obj);
 DismModule* allocDismModule();

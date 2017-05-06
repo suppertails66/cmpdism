@@ -17,6 +17,7 @@ typedef struct String {
   void (*catData)(struct String* obj, const char* data, unsigned int dataSize);
   void (*catString)(struct String* obj, struct String* str);
   void (*catInt)(struct String* obj, int val, const char* fmt);
+  void (*catChar)(struct String* obj, char val);
   int (*compare)(struct String* obj, struct String* str);
   void (*fromInt)(struct String* obj, int val, const char* fmt);
   void (*padToSize)(struct String* obj, char c, int targetSize);
@@ -37,6 +38,7 @@ void StringcatC(String* obj, const char* c);
 void StringcatData(String* obj, const char* data, unsigned int dataSize);
 void StringcatString(String* obj, String* str);
 void StringcatInt(String* obj, int val, const char* fmt);
+void StringcatChar(String* obj, char val);
 int Stringcompare(String* obj, String* str);
 void StringfromInt(String* obj, int val, const char* fmt);
 void StringpadToSize(String* obj, char c, int targetSize);

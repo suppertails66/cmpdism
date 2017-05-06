@@ -79,6 +79,13 @@ void StringcatInt(String* obj, int val, const char* fmt) {
   temp.destroy(&temp);
 }
 
+void StringcatChar(String* obj, char val) {
+  char buf[2];
+  memset(buf, 0, 2);
+  buf[0] = val;
+  obj->catC(obj, buf);
+}
+
 int Stringcompare(String* obj, String* str) {
   /* this isn't stdlib compliant, but is probably good enough for us */
 
@@ -150,6 +157,7 @@ void initString(String* obj) {
   obj->catData = StringcatData;
   obj->catString = StringcatString;
   obj->catInt = StringcatInt;
+  obj->catChar = StringcatChar;
   obj->compare = Stringcompare;
   obj->fromInt = StringfromInt;
   obj->padToSize = StringpadToSize;

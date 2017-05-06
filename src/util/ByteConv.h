@@ -23,5 +23,7 @@ void toBytes(char* dst,
              Endianness endianness,
              Signedness signedness);
 
+int reverseEndianness(int value, int numbytes);
+
 
 #endif

@@ -67,3 +67,20 @@ void toBytes(char* dst,
     break;
   }
 }
+
+int reverseEndianness(int value, int numbytes) {
+  int rev = 0;
+  int i;
+  for (i = 0; i < numbytes; i++) {
+    int srcshift = i * 8;
+    int dstshift = (numbytes - i - 1) * 8;
+    
+    int srcmask = 0xFF << srcshift;
+    int b = (value & srcmask) >> srcshift;
+    rev |= (b << dstshift);
+  }
+  
+  return rev;
+}
+
+

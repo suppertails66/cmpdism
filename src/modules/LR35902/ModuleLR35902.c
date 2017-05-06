@@ -154,7 +154,7 @@ OpInfo opcodesLR35902[] = {
 /*  { "jp", "11110010LLLLLLLLLLLLLLLL",
      opFlagsNone, generateOpcodeLR35902, 0, "p,{L}" }, */
   { "ld", "11110010",
-     opFlagsNone, generateOpcodeLR35902, 0, "a,(FF00+c)" }, 
+     opFlagsNone, generateOpcodeLR35902, 0, "a,($FF00+c)" }, 
      
   { "jp", "11001010LLLLLLLLLLLLLLLL",
      opFlagsNone, generateOpcodeLR35902, 0, "z,{L}" }, 
@@ -169,7 +169,7 @@ OpInfo opcodesLR35902[] = {
 /*  { "jp", "11100010LLLLLLLLLLLLLLLL",
      opFlagsNone, generateOpcodeLR35902, 0, "po,{L}" }, */
   { "ld", "11100010",
-     opFlagsNone, generateOpcodeLR35902, 0, "(FF00+c),a" }, 
+     opFlagsNone, generateOpcodeLR35902, 0, "($FF00+c),a" }, 
      
   { "jr", "00011000OOOOOOOO",
      opFlagsNone, generateOpcodeLR35902, 0, "{O}" }, 
@@ -311,7 +311,7 @@ OpInfo opcodesLR35902[] = {
 /*  { "ret", "11110000",
      opFlagsNone, generateOpcodeLR35902, 0, "p" }, */
   { "ld", "11110000NNNNNNNN",
-     opFlagsNone, generateOpcodeLR35902, 0, "a,(FF00+{N})" }, 
+     opFlagsNone, generateOpcodeLR35902, 0, "a,($FF00+{N})" }, 
      
   { "ret", "11001000",
      opFlagsNone, generateOpcodeLR35902, 0, "z" }, 
@@ -326,7 +326,7 @@ OpInfo opcodesLR35902[] = {
 /*  { "ret", "11100000",
      opFlagsNone, generateOpcodeLR35902, 0, "po" }, */
   { "ld", "11100000NNNNNNNN",
-     opFlagsNone, generateOpcodeLR35902, 0, "(FF00+{N}),a" }, 
+     opFlagsNone, generateOpcodeLR35902, 0, "($FF00+{N}),a" }, 
      
   { "rla", "00010111",
      opFlagsNone, generateOpcodeLR35902, 0, "" }, 

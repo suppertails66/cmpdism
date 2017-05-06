@@ -289,6 +289,8 @@ void DismModuleprintComparedDisassembly(DismModule* obj, String* dst,
     if ((alignment.alignmentType == opcodeAlignmentTransformed)
         && ((alignment.iA >= limit) && (alignment.iB >= limit))) {
       
+/*      fprintf(stderr, "%d %d %d\n", iA, iB, limit); */
+      
       /* Print remaining shared content */
       while ((iA < opcodesASize) && (iB < opcodesBSize)) {
     
@@ -561,7 +563,7 @@ OpcodeAlignmentData DismModuledetectOpcodeAddition(struct DismModule* obj,
      distance allowed by the settings. Otherwise, we truncate the check window
      to fit within the stream. */
   limit = ((iB + realDist) < limit)
-            ? (iB + maxDist)
+            ? (iB + seqLen)
             : (limit - seqLen);
             
   /* Check each opcode for realignment */
@@ -603,7 +605,7 @@ int DismModulematchSeq(struct DismModule* obj,
     Opcode* opB = opcodesB->getP(opcodesB, iB + i);
     
     OpInfo* opInfoA = opA->info(opA);
-    OpInfo* opInfoB = opB->info(opB);
+/*    OpInfo* opInfoB = opB->info(opB); */
     
     /* If ops are not same type, they're not the same */
 /*    if (opInfoA->id != opInfoB->id) return 0; */

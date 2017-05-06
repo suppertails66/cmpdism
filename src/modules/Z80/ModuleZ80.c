@@ -101,8 +101,6 @@ OpInfo opcodesZ80[] = {
      opFlagsNone, generateOpcodeZ80, 0, "pe,{L}" }, 
   { "call", "11100100LLLLLLLLLLLLLLLL",
      opFlagsNone, generateOpcodeZ80, 0, "po,{L}" }, 
-  { "call", "11100100LLLLLLLLLLLLLLLL",
-     opFlagsNone, generateOpcodeZ80, 0, "po,{L}" }, 
   { "ccf", "00111111",
      opFlagsNone, generateOpcodeZ80, 0, "" }, 
   { "cp", "10111RRR",
@@ -432,7 +430,7 @@ OpInfo opcodesZ80[] = {
   { "neg", "1110110101000100",
      opFlagsNone, generateOpcodeZ80, 0, "" }, 
   { "nop", "00000000",
-     opFlagsNone, generateOpcodeZ80, 0, "" }, 
+     opFlagsSuspicious, generateOpcodeZ80, 0, "" }, 
   { "or", "10110RRR",
      opFlagsNone, generateOpcodeZ80, 0, "{R}" }, 
   { "or", "11110110NNNNNNNN",
@@ -582,7 +580,7 @@ OpInfo opcodesZ80[] = {
   { "rst", "11110111",
      opFlagsNone, generateOpcodeZ80, 0, "$30" }, 
   { "rst", "11111111",
-     opFlagsNone, generateOpcodeZ80, 0, "$38" }, 
+     opFlagsSuspicious, generateOpcodeZ80, 0, "$38" }, 
   { "sbc", "10011RRR",
      opFlagsNone, generateOpcodeZ80, 0, "{R}" }, 
   { "sbc", "11011110NNNNNNNN",
@@ -693,10 +691,6 @@ void print2bConstantZ80(int value, String* dst, DismSettings* config) {
   dst->catInt(dst, value, "$%04X");
 }
 
-/*void printUnsignedConstantZ80(int value, String* dst, DismSettings* config) {
-  dst->catInt(dst, value, "%04X");
-} */
-
 void printOffsetZ80(int value, String* dst, DismSettings* config) {
   if (value & 0x80) {
     dst->catInt(dst, 0x100 - value, "-$%02X");
@@ -714,23 +708,10 @@ void printAddressZ80(int value, String* dst, DismSettings* config) {
   dst->catInt(dst, value, "$%04X");
 }
 
-/*void setParameterZ80(SubDataZ80* dat, MapSS* args, char code, int num) {
-  
-} */
-
 unsigned int readStepOpcodeZ80(struct Opcode* obj, BufferStream* stream,
                          DismSettings* config, MapSS* args) {
   unsigned int total = strlen(obj->info_->recString) / k_bitsPerByte;
   obj->data_ = args;
-  
-/*  SubDataZ80* dat = (SubDataZ80*)(obj->data_);
-  const char* infoString = (const char*)(obj->info(obj)->data);
-  
-  setParameterZ80(dat, args, infoString[2], 0);
-  setParameterZ80(dat, args, infoString[4], 1);
-  setParameterZ80(dat, args, infoString[6], 2);
-  
-  freeMapSS(args); */
   
   return total;
 }
@@ -849,17 +830,8 @@ OpcodeSimilarity compareOpcodeZ80(Opcode* obj, Opcode* other,
   
   MapSS* argsA = (MapSS*)(obj->data_);
   MapSS* argsB = (MapSS*)(other->data_);
-/*  const char* infoString = (const char*)(obj->info(obj)->data); */
   
   return compareParametersZ80(argsA, argsB, config);
-  
-/*  return greaterOpDifference(
-    greaterOpDifference(
-      compareParameterZ80(datA, datB, config, infoString[2], 0),
-      compareParameterZ80(datA, datB, config, infoString[4], 1)
-    ),
-    compareParameterZ80(datA, datB, config, infoString[6], 2)
-  ); */
 }
 
 int printParameterZ80(const char* infoString, int pos, MapSS* args,
@@ -889,7 +861,7 @@ int printParameterZ80(const char* infoString, int pos, MapSS* args,
   case 'N':
     /* check whether 8- or 16-bit */
     if (valueString.size(&valueString) > k_bitsPerByte) {
-      print2bConstantZ80(value, dst, config);
+      print2bConstantZ80(reverseEndianness(value, 2), dst, config);
     }
     else {
       print1bConstantZ80(value, dst, config);
@@ -932,10 +904,6 @@ void printOpcodeZ80(Opcode* obj, String* dst, DismSettings* config) {
       ++i;
     }
   }
-  
-/*  printParameterZ80(dat, dst, config, infoString[2], 0);
-  printParameterZ80(dat, dst, config, infoString[4], 1);
-  printParameterZ80(dat, dst, config, infoString[6], 2); */
   
 }
 

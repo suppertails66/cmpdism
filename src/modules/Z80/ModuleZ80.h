@@ -23,6 +23,14 @@ void destructorOpcodeZ80(Opcode* obj);
 
 void ModuleZ80destroyInternal(DismModule* obj);
 
+OpcodeSimilarity compareOpcodeZ80(Opcode* obj, Opcode* other,
+                         DismSettings* config);
+
+void printOpcodeZ80(Opcode* obj, String* dst, DismSettings* config);
+
+unsigned int readStepOpcodeZ80(struct Opcode* obj, BufferStream* stream,
+                         DismSettings* config, MapSS* args);
+
 /* Init functions */
 
 void initModuleZ80(DismModule* obj);

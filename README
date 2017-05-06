@@ -21,6 +21,10 @@ Currently, the following architectures are supported:
 * SH family:
   * Hitachi SH-2
 
+* Z80 family:
+  * Zilog Z80
+  * Sharp LR35902
+
 * Multi-processor instruction sets:
   * MIPS-I (coprocessor instructions currently unsupported)
 

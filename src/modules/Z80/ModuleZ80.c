@@ -873,13 +873,11 @@ int printParameterZ80(const char* infoString, int pos, MapSS* args,
     break;
   /* address */
   case 'L':
-      printAddressZ80(value, dst, config);
+      printAddressZ80(reverseEndianness(value, 2), dst, config);
     break;
   default:
     error("Unknown Z80 parameter type (print): ");
-    {
-      error(typestr);
-    }
+    error(typestr);
     fatal();
     break;
   }

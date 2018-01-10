@@ -291,7 +291,8 @@ void print2bConstant6502(String* dst, Opcode* src,
 
 void print1bRelative6502(String* dst, Opcode* src,
                      DismSettings* config) {
-  print1bRelative6502Raw(dst, singleValue6502(src), config);
+  print1bRelative6502Raw(dst, singleValue6502(src), config,
+                         src->pos(src) + 2);
 }
 
 void print1bAddress6502Raw(String* dst, unsigned int value,
@@ -315,13 +316,16 @@ void print2bConstant6502Raw(String* dst, unsigned int value,
 }
 
 void print1bRelative6502Raw(String* dst, int value,
-                     DismSettings* config) {
+                     DismSettings* config,
+                     int baseAddress) {
   if (value < 0) {
     dst->catInt(dst, -value, "-$%02X");
   }
   else {
     dst->catInt(dst, value, "+$%02X");
   }
+  
+  dst->catInt(dst, value + baseAddress, " [$%X]");
 }
 
 /* ==================== Abs ==================== */

@@ -53,7 +53,8 @@ void print1bConstant6502Raw(String* dst, unsigned int value,
 void print2bConstant6502Raw(String* dst, unsigned int value,
                       DismSettings* config);
 void print1bRelative6502Raw(String* dst, int value,
-                     DismSettings* config);
+                     DismSettings* config,
+                     int baseAddress);
 
 int singleValue6502(Opcode* src);
 

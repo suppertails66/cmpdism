@@ -5,14 +5,14 @@
 
 OpInfo opcodes65C02[] = {
   { "bra", "10000000xxxxxxxx", opFlagsNone, generate6502Relative },
-  { "ora", "00010010xxxxxxxxxxxxxxxx", opFlagsNone, generate6502Indirect },
-  { "and", "00110010xxxxxxxxxxxxxxxx", opFlagsNone, generate6502Indirect },
-  { "eor", "01010010xxxxxxxxxxxxxxxx", opFlagsNone, generate6502Indirect },
-  { "adc", "01110010xxxxxxxxxxxxxxxx", opFlagsNone, generate6502Indirect },
-  { "sta", "10010010xxxxxxxxxxxxxxxx", opFlagsNone, generate6502Indirect },
-  { "lda", "10110010xxxxxxxxxxxxxxxx", opFlagsNone, generate6502Indirect },
-  { "cmp", "11010010xxxxxxxxxxxxxxxx", opFlagsNone, generate6502Indirect },
-  { "sbc", "11110010xxxxxxxxxxxxxxxx", opFlagsNone, generate6502Indirect },
+  { "ora", "00010010xxxxxxxx", opFlagsNone, generate65C02ZPInd },
+  { "and", "00110010xxxxxxxx", opFlagsNone, generate65C02ZPInd },
+  { "eor", "01010010xxxxxxxx", opFlagsNone, generate65C02ZPInd },
+  { "adc", "01110010xxxxxxxx", opFlagsNone, generate65C02ZPInd },
+  { "sta", "10010010xxxxxxxx", opFlagsNone, generate65C02ZPInd },
+  { "lda", "10110010xxxxxxxx", opFlagsNone, generate65C02ZPInd },
+  { "cmp", "11010010xxxxxxxx", opFlagsNone, generate65C02ZPInd },
+  { "sbc", "11110010xxxxxxxx", opFlagsNone, generate65C02ZPInd },
   { "tsb", "00000100xxxxxxxx", opFlagsNone, generate6502ZP },
   { "trb", "00010100xxxxxxxx", opFlagsNone, generate6502ZP },
   { "bit", "00110100xxxxxxxx", opFlagsNone, generate6502ZPX },
@@ -108,6 +108,25 @@ void printString65C02ZPInd(Opcode* obj, String* dst,
   print2bAddress65C02(dst, obj, config);
   dst->catC(dst, ")");
 } */
+
+GENERATE_65C02_OPCODE_GENERATION_DEFINITION(ZPInd);
+
+OpcodeSimilarity compare65C02ZPInd(Opcode* obj, Opcode* other,
+                                 DismSettings* config) {
+  return compare1bAddress6502(obj, other, config);
+}
+
+unsigned int readStep65C02ZPInd(Opcode* obj, BufferStream* stream,
+                              DismSettings* config, MapSS* args) {
+  return read1bArg6502(obj, stream, config);
+}
+
+void printString65C02ZPInd(Opcode* obj, String* dst,
+                         DismSettings* config) {
+  dst->catC(dst, "(");
+  print1bAddress6502(dst, obj, config);
+  dst->catC(dst, ")");
+}
 
 /* ==================== ZPRel ==================== */
 void generate65C02ZPRel(OpInfo* opInfo, Opcode* dst,

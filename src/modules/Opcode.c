@@ -42,7 +42,7 @@ void Opcodeprint(Opcode* obj, String* dst,
   fmt.catString(&fmt, &temp);
   fmt.catC(&fmt, "X");
   /* Print address with the specified padding */
-  temp.fromInt(&temp, obj->pos_, fmt.cStr(&fmt));
+  temp.fromInt(&temp, obj->pos_ + config->fileLoadAddr, fmt.cStr(&fmt));
   dst->catC(dst, temp.cStr(&temp));
   dst->catC(dst, " ");
   

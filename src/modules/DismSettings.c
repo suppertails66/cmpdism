@@ -12,6 +12,7 @@ void initDismSettings(DismSettings* obj) {
   obj->secondFileStartOffset = 0;
   obj->firstFileEndOffset = -1;
   obj->secondFileEndOffset = -1;
+  obj->fileLoadAddr = 0;
   
   obj->firstFileExternalCodeMap = NULL;
   obj->secondFileExternalCodeMap = NULL;
@@ -95,6 +96,9 @@ void fillDismSettings(DismSettings* obj, int argc, char* argv[]) {
     }
     else if (strcmp(argv[i], "-f2") == 0) {
       obj->secondFileEndOffset = cStringToInt(argv[i + 1]);
+    }
+    else if (strcmp(argv[i], "-o") == 0) {
+      obj->fileLoadAddr = cStringToInt(argv[i + 1]);
     }
     else if ((strcmp(argv[i], "-r") == 0)
              || (strcmp(argv[i], "--realign-len") == 0)) {

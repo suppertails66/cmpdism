@@ -186,21 +186,21 @@ OpInfo opcodesZ80[] = {
   { "in", "11011011NNNNNNNN",
      opFlagsNone, generateOpcodeZ80, 0, "a,({N})" }, 
   { "in", "1110110101110000",
-     opFlagsNone, generateOpcodeZ80, 0, "(C)" }, 
+     opFlagsNone, generateOpcodeZ80, 0, "(c)" }, 
   { "in", "1110110101111000",
-     opFlagsNone, generateOpcodeZ80, 0, "a,(C)" }, 
+     opFlagsNone, generateOpcodeZ80, 0, "a,(c)" }, 
   { "in", "1110110101000000",
-     opFlagsNone, generateOpcodeZ80, 0, "b,(C)" }, 
+     opFlagsNone, generateOpcodeZ80, 0, "b,(c)" }, 
   { "in", "1110110101001000",
-     opFlagsNone, generateOpcodeZ80, 0, "c,(C)" }, 
+     opFlagsNone, generateOpcodeZ80, 0, "c,(c)" }, 
   { "in", "1110110101010000",
-     opFlagsNone, generateOpcodeZ80, 0, "d,(C)" }, 
+     opFlagsNone, generateOpcodeZ80, 0, "d,(c)" }, 
   { "in", "1110110101011000",
-     opFlagsNone, generateOpcodeZ80, 0, "e,(C)" }, 
+     opFlagsNone, generateOpcodeZ80, 0, "e,(c)" }, 
   { "in", "1110110101100000",
-     opFlagsNone, generateOpcodeZ80, 0, "h,(C)" }, 
+     opFlagsNone, generateOpcodeZ80, 0, "h,(c)" }, 
   { "in", "1110110101101000",
-     opFlagsNone, generateOpcodeZ80, 0, "l,(C)" }, 
+     opFlagsNone, generateOpcodeZ80, 0, "l,(c)" }, 
   { "inc", "00111100",
      opFlagsNone, generateOpcodeZ80, 0, "a" }, 
   { "inc", "00000100",
@@ -444,21 +444,21 @@ OpInfo opcodesZ80[] = {
   { "out", "11010011NNNNNNNN",
      opFlagsNone, generateOpcodeZ80, 0, "({N}),a" }, 
   { "out", "1110110101110001",
-     opFlagsNone, generateOpcodeZ80, 0, "(C),0" }, 
+     opFlagsNone, generateOpcodeZ80, 0, "(c),0" }, 
   { "out", "1110110101111001",
-     opFlagsNone, generateOpcodeZ80, 0, "(C),a" }, 
+     opFlagsNone, generateOpcodeZ80, 0, "(c),a" }, 
   { "out", "1110110101000001",
-     opFlagsNone, generateOpcodeZ80, 0, "(C),b" }, 
+     opFlagsNone, generateOpcodeZ80, 0, "(c),b" }, 
   { "out", "1110110101001001",
-     opFlagsNone, generateOpcodeZ80, 0, "(C),c" }, 
+     opFlagsNone, generateOpcodeZ80, 0, "(c),c" }, 
   { "out", "1110110101010001",
-     opFlagsNone, generateOpcodeZ80, 0, "(C),d" }, 
+     opFlagsNone, generateOpcodeZ80, 0, "(c),d" }, 
   { "out", "1110110101011001",
-     opFlagsNone, generateOpcodeZ80, 0, "(C),e" }, 
+     opFlagsNone, generateOpcodeZ80, 0, "(c),e" }, 
   { "out", "1110110101100001",
-     opFlagsNone, generateOpcodeZ80, 0, "(C),h" }, 
+     opFlagsNone, generateOpcodeZ80, 0, "(c),h" }, 
   { "out", "1110110101101001",
-     opFlagsNone, generateOpcodeZ80, 0, "(C),l" }, 
+     opFlagsNone, generateOpcodeZ80, 0, "(c),l" }, 
   { "outd", "1110110110101011",
      opFlagsNone, generateOpcodeZ80, 0, "" }, 
   { "otdr", "1110110110111011",
@@ -525,8 +525,8 @@ OpInfo opcodesZ80[] = {
      opFlagsNone, generateOpcodeZ80, 0, "" }, 
   { "rl", "1100101100010RRR",
      opFlagsNone, generateOpcodeZ80, 0, "{R}" }, 
-  { "rl", "1100101100010110",
-     opFlagsNone, generateOpcodeZ80, 0, "(hl)" }, 
+/*  { "rl", "1100101100010110",
+     opFlagsNone, generateOpcodeZ80, 0, "(hl)" }, */
   { "rl", "1101110111001011NNNNNNNN00010110",
      opFlagsNone, generateOpcodeZ80, 0, "(ix+{N})" }, 
   { "rl", "1111110111001011NNNNNNNN00010110",
@@ -535,8 +535,8 @@ OpInfo opcodesZ80[] = {
      opFlagsNone, generateOpcodeZ80, 0, "" }, 
   { "rlc", "1100101100000RRR",
      opFlagsNone, generateOpcodeZ80, 0, "{R}" }, 
-  { "rlc", "1100101100000110",
-     opFlagsNone, generateOpcodeZ80, 0, "(hl)" }, 
+/*  { "rlc", "1100101100000110",
+     opFlagsNone, generateOpcodeZ80, 0, "(hl)" }, */
   { "rlc", "1101110111001011NNNNNNNN00000110",
      opFlagsNone, generateOpcodeZ80, 0, "(ix+{N})" }, 
   { "rlc", "1111110111001011NNNNNNNN00000110",
@@ -545,20 +545,20 @@ OpInfo opcodesZ80[] = {
      opFlagsNone, generateOpcodeZ80, 0, "" }, 
   { "rra", "00011111",
      opFlagsNone, generateOpcodeZ80, 0, "" }, 
-  { "rr", "00011RRR",
+  { "rr", "1100101100011RRR",
      opFlagsNone, generateOpcodeZ80, 0, "{R}" }, 
-  { "rr", "1100101100011110",
-     opFlagsNone, generateOpcodeZ80, 0, "(hl)" }, 
+/*  { "rr", "1100101100011110",
+     opFlagsNone, generateOpcodeZ80, 0, "(hl)" }, */
   { "rr", "1101110111001011NNNNNNNN00011110",
      opFlagsNone, generateOpcodeZ80, 0, "(ix+{N})" }, 
   { "rr", "1111110111001011NNNNNNNN00011110",
      opFlagsNone, generateOpcodeZ80, 0, "(iy+{N})" }, 
   { "rrca", "00001111",
      opFlagsNone, generateOpcodeZ80, 0, "" }, 
-  { "rrc", "00001RRR",
+  { "rrc", "1100101100001RRR",
      opFlagsNone, generateOpcodeZ80, 0, "{R}" }, 
-  { "rrc", "1100101100001110",
-     opFlagsNone, generateOpcodeZ80, 0, "(hl)" }, 
+/*  { "rrc", "1100101100001110",
+     opFlagsNone, generateOpcodeZ80, 0, "(hl)" }, */
   { "rrc", "1101110111001011NNNNNNNN00001110",
      opFlagsNone, generateOpcodeZ80, 0, "(ix+{N})" }, 
   { "rrc", "1111110111001011NNNNNNNN00001110",
@@ -670,7 +670,7 @@ const char* registerNamesZ80[] = {
   "e",
   "h",
   "l",
-  "hl",
+  "(hl)",
   "a"
 };
 
@@ -691,13 +691,16 @@ void print2bConstantZ80(int value, String* dst, DismSettings* config) {
   dst->catInt(dst, value, "$%04X");
 }
 
-void printOffsetZ80(int value, String* dst, DismSettings* config) {
+void printOffsetZ80(int value, int base, String* dst, DismSettings* config) {
   if (value & 0x80) {
     dst->catInt(dst, 0x100 - value, "-$%02X");
+    dst->catInt(dst, base - (0x100 - value), " [$%X]");
   }
   else {
     dst->catInt(dst, value, "+$%02X");
+    dst->catInt(dst, value + base, " [$%X]");
   }
+  
 }
 
 void printBitZ80(int value, String* dst, DismSettings* config) {
@@ -834,7 +837,8 @@ OpcodeSimilarity compareOpcodeZ80(Opcode* obj, Opcode* other,
   return compareParametersZ80(argsA, argsB, config);
 }
 
-int printParameterZ80(const char* infoString, int pos, MapSS* args,
+int printParameterZ80(const Opcode* obj,
+                      const char* infoString, int pos, MapSS* args,
                       String* dst, DismSettings* config) {
   int sz = 3;
   
@@ -869,7 +873,7 @@ int printParameterZ80(const char* infoString, int pos, MapSS* args,
     break;
   /* offset */
   case 'O':
-      printOffsetZ80(value, dst, config);
+      printOffsetZ80(value, obj->pos_ + 2, dst, config);
     break;
   /* address */
   case 'L':
@@ -895,7 +899,7 @@ void printOpcodeZ80(Opcode* obj, String* dst, DismSettings* config) {
   int i = 0;
   while (i < infoStringLen) {
     if (infoString[i] == '{') {
-      i += printParameterZ80(infoString, i, args, dst, config);
+      i += printParameterZ80(obj, infoString, i, args, dst, config);
     }
     else {
       dst->catChar(dst, infoString[i]);

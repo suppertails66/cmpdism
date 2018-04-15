@@ -56,6 +56,11 @@ typedef struct {
    */
   unsigned int secondFileEndOffset;
   
+  /**
+   * Files' load address.
+   */
+  unsigned int fileLoadAddr;
+  
   /*---------- CODEMAP SETTINGS ----------*/
   
   /**

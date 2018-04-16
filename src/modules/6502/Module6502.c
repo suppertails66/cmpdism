@@ -325,7 +325,7 @@ void print1bRelative6502Raw(String* dst, int value,
     dst->catInt(dst, value, "+$%02X");
   } */
   
-  dst->catInt(dst, value + baseAddress, "[$%X]");
+  dst->catInt(dst, value + baseAddress + config->fileLoadAddr, "[$%X]");
 }
 
 /* ==================== Abs ==================== */

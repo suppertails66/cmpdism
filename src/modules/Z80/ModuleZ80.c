@@ -413,12 +413,12 @@ OpInfo opcodesZ80[] = {
      opFlagsNone, generateOpcodeZ80, 0, "({L}),sp" }, 
   { "ld", "1101110101110RRRNNNNNNNN",
      opFlagsNone, generateOpcodeZ80, 0, "(ix+{N}),{R}" }, 
-  { "ld", "1101110100110110NNNNNNNNNNNNNNNN",
-     opFlagsNone, generateOpcodeZ80, 0, "(ix+{N}),{N}" }, 
+  { "ld", "1101110100110110MMMMMMMMNNNNNNNN",
+     opFlagsNone, generateOpcodeZ80, 0, "(ix+{M}),{N}" }, 
   { "ld", "1111110101110RRRNNNNNNNN",
      opFlagsNone, generateOpcodeZ80, 0, "(iy+{N}),{R}" }, 
-  { "ld", "1111110100110110NNNNNNNNNNNNNNNN",
-     opFlagsNone, generateOpcodeZ80, 0, "(iy+{N}),{N}" }, 
+  { "ld", "1111110100110110MMMMMMMMNNNNNNNN",
+     opFlagsNone, generateOpcodeZ80, 0, "(iy+{M}),{N}" }, 
   { "ldd", "1110110110101000",
      opFlagsNone, generateOpcodeZ80, 0, "" }, 
   { "lddr", "1110110110111000",
@@ -863,6 +863,7 @@ int printParameterZ80(const Opcode* obj,
     break;
   /* constant */
   case 'N':
+  case 'M':
     /* check whether 8- or 16-bit */
     if (valueString.size(&valueString) > k_bitsPerByte) {
       print2bConstantZ80(reverseEndianness(value, 2), dst, config);

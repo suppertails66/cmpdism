@@ -25,6 +25,7 @@ void printProgramHelp() {
 "  -i# <filename>\t\tSpecifies input filename(s).\n"
 "  -s# <offset>\t\t\tSpecifies starting offset of disassembly.\n"
 "  -f# <offset>\t\t\tSpecifies ending offset of disassembly.\n"
+"  -o <offset>\t\t\tSpecifies load offset of data\n"
 "  -r, --realign-len <length>\tNumber of ops which must be sequentially\n"
 "  \t\t\t\tmatched before two op streams are considered\n"
 "  \t\t\t\trealigned (default: 16).\n"

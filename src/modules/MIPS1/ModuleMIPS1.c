@@ -13,6 +13,8 @@ void generateOpcodeMIPS1(OpInfo* opInfo, Opcode* dst,
                       DismSettings* config);
 
 OpInfo opcodesMIPS1[] = {
+  { "nop", "00000000000000000000000000000000",
+     opFlagsNone, generateOpcodeMIPS1, 0, "R. , , " },
   { "add", "000000ssssstttttdddddaaaaa100000",
      opFlagsNone, generateOpcodeMIPS1, 0, "R.d,s,t" },
   { "addu", "000000ssssstttttdddddaaaaa100001",
@@ -175,8 +177,17 @@ void printUnsignedConstantMIPS1(int value, String* dst, DismSettings* config) {
   dst->catInt(dst, value, "%04X");
 }
 
-void printOffsetMIPS1(int value, String* dst, DismSettings* config) {
-  dst->catInt(dst, value, "%04X");
+void printOffsetMIPS1(int value, int base, String* dst, DismSettings* config) {
+/*  dst->catInt(dst, value, "%04X"); */
+  value *= 4;
+  if (value < 0) {
+    dst->catInt(dst, -value, "-$%02X");
+    dst->catInt(dst, base - (-value) + config->fileLoadAddr, " [$%X]");
+  }
+  else {
+    dst->catInt(dst, value, "+$%02X");
+    dst->catInt(dst, value + base + config->fileLoadAddr, " [$%X]");
+  }
 }
 
 void printShiftAmountMIPS1(int value, String* dst, DismSettings* config) {
@@ -187,8 +198,8 @@ void printAddressMIPS1(int value, String* dst, DismSettings* config) {
   /* High 4 bits and low 2 bits of PC aren't known */
   value <<= 2;
   
-  dst->catC(dst, "X");
-  dst->catInt(dst, value, "%07X");
+/*  dst->catC(dst, "X"); */
+  dst->catInt(dst, value, "$%07X");
 }
 
 void setParameterMIPS1(SubDataMIPS1* dat, MapSS* args, char code, int num) {
@@ -372,7 +383,8 @@ OpcodeSimilarity compareOpcodeMIPS1(Opcode* obj, Opcode* other,
   );
 }
 
-void printParameterMIPS1(SubDataMIPS1* dat, String* dst, DismSettings* config,
+void printParameterMIPS1(SubDataMIPS1* dat, Opcode* obj,  String* dst,
+                         DismSettings* config,
                          char code, int num) {
   if (code == ' ') return;
   
@@ -422,7 +434,7 @@ void printParameterMIPS1(SubDataMIPS1* dat, String* dst, DismSettings* config,
     break;
   /* offset */
   case 'l':
-    printOffsetMIPS1(*target, dst, config);
+    printOffsetMIPS1(*target, obj->pos_ + 4, dst, config);
     break;
   /* absolute label */
   case 'L':
@@ -446,11 +458,11 @@ void printOpcodeMIPS1(Opcode* obj, String* dst, DismSettings* config) {
   const char* infoString = (const char*)(obj->info(obj)->data);
   
   SubDataMIPS1* dat = (SubDataMIPS1*)(obj->data_);
-  
-  printParameterMIPS1(dat, dst, config, infoString[2], 0);
-  printParameterMIPS1(dat, dst, config, infoString[4], 1);
-  printParameterMIPS1(dat, dst, config, infoString[6], 2);
-  
+
+  printParameterMIPS1(dat, obj, dst, config, infoString[2], 0);
+  printParameterMIPS1(dat, obj, dst, config, infoString[4], 1);
+  printParameterMIPS1(dat, obj, dst, config, infoString[6], 2);
+
 }
 
 void generateOpcodeMIPS1(OpInfo* opInfo, Opcode* dst,

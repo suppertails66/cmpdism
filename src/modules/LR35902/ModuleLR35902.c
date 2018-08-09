@@ -332,23 +332,23 @@ OpInfo opcodesLR35902[] = {
      opFlagsNone, generateOpcodeLR35902, 0, "" }, 
   { "rl", "1100101100010RRR",
      opFlagsNone, generateOpcodeLR35902, 0, "{R}" }, 
-  { "rl", "1100101100010110",
-     opFlagsNone, generateOpcodeLR35902, 0, "(hl)" }, 
+/*  { "rl", "1100101100010110",
+     opFlagsNone, generateOpcodeLR35902, 0, "(hl)" }, */
   { "rlca", "00000111",
      opFlagsNone, generateOpcodeLR35902, 0, "" }, 
   { "rlc", "1100101100000RRR",
      opFlagsNone, generateOpcodeLR35902, 0, "{R}" }, 
-  { "rlc", "1100101100000110",
-     opFlagsNone, generateOpcodeLR35902, 0, "(hl)" }, 
+/*  { "rlc", "1100101100000110",
+     opFlagsNone, generateOpcodeLR35902, 0, "(hl)" }, */
   { "rra", "00011111",
      opFlagsNone, generateOpcodeLR35902, 0, "" }, 
-  { "rr", "00011RRR",
+  { "rr", "1100101100011RRR",
      opFlagsNone, generateOpcodeLR35902, 0, "{R}" }, 
-  { "rr", "1100101100011110",
-     opFlagsNone, generateOpcodeLR35902, 0, "(hl)" }, 
+/*  { "rr", "1100101100011110",
+     opFlagsNone, generateOpcodeLR35902, 0, "(hl)" }, */
   { "rrca", "00001111",
      opFlagsNone, generateOpcodeLR35902, 0, "" }, 
-  { "rrc", "00001RRR",
+  { "rrc", "1100101100001RRR",
      opFlagsNone, generateOpcodeLR35902, 0, "{R}" }, 
   { "rrc", "1100101100001110",
      opFlagsNone, generateOpcodeLR35902, 0, "(hl)" }, 
@@ -423,7 +423,7 @@ const char* registerNamesLR35902[] = {
   "e",
   "h",
   "l",
-  "hl",
+  "(hl)",
   "a"
 };
 
@@ -444,12 +444,15 @@ void print2bConstantLR35902(int value, String* dst, DismSettings* config) {
   dst->catInt(dst, value, "$%04X");
 }
 
-void printOffsetLR35902(int value, String* dst, DismSettings* config) {
+void printOffsetLR35902(int value, int base,
+                        String* dst, DismSettings* config) {
   if (value & 0x80) {
     dst->catInt(dst, 0x100 - value, "-$%02X");
+    dst->catInt(dst, base - (0x100 - value) + config->fileLoadAddr, " [$%X]");
   }
   else {
     dst->catInt(dst, value, "+$%02X");
+    dst->catInt(dst, value + base, " [$%X]");
   }
 }
 
@@ -587,7 +590,8 @@ OpcodeSimilarity compareOpcodeLR35902(Opcode* obj, Opcode* other,
   return compareParametersLR35902(argsA, argsB, config);
 }
 
-int printParameterLR35902(const char* infoString, int pos, MapSS* args,
+int printParameterLR35902(const Opcode* obj,
+                      const char* infoString, int pos, MapSS* args,
                       String* dst, DismSettings* config) {
   int sz = 3;
   
@@ -622,7 +626,7 @@ int printParameterLR35902(const char* infoString, int pos, MapSS* args,
     break;
   /* offset */
   case 'O':
-      printOffsetLR35902(value, dst, config);
+      printOffsetLR35902(value, obj->pos_ + 2, dst, config);
     break;
   /* address */
   case 'L':
@@ -650,7 +654,7 @@ void printOpcodeLR35902(Opcode* obj, String* dst, DismSettings* config) {
   int i = 0;
   while (i < infoStringLen) {
     if (infoString[i] == '{') {
-      i += printParameterLR35902(infoString, i, args, dst, config);
+      i += printParameterLR35902(obj, infoString, i, args, dst, config);
     }
     else {
       dst->catChar(dst, infoString[i]);

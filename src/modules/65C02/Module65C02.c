@@ -38,7 +38,7 @@ OpInfo opcodes65C02[] = {
   { "inc", "00011010", opFlagsNone, generate6502Implied },
   { "dec", "00111010", opFlagsNone, generate6502Implied },
   { "phy", "01011010", opFlagsNone, generate6502Implied },
-  { "pla", "01111010", opFlagsNone, generate6502Implied },
+  { "ply", "01111010", opFlagsNone, generate6502Implied },
   { "phx", "11011010", opFlagsNone, generate6502Implied },
   { "plx", "11111010", opFlagsNone, generate6502Implied },
   { "tsb", "00001100xxxxxxxxxxxxxxxx", opFlagsNone, generate6502Abs },

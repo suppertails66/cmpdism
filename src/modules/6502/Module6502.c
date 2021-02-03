@@ -197,8 +197,12 @@ OpcodeSimilarity compareRelative6502(int first, int second,
   if (first == second) {
     return opcodeSimilaritySame;
   }
-  else {
+  else if (config->addressChangesDistinct) {
     return opcodeSimilarityDistinct;
+  }
+  else {
+ /*   return opcodeSimilarityDistinct; */
+    return opcodeSimilarityNear;
   }
 }
 

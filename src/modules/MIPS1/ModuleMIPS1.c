@@ -170,23 +170,28 @@ void printRegisterMIPS1(int index, String* dst, DismSettings* config) {
 }
 
 void printSignedConstantMIPS1(int value, String* dst, DismSettings* config) {
-  dst->catInt(dst, value, "%04X");
+  if (value < 0)
+    dst->catInt(dst, value, "0x%04X");
+  else
+    dst->catInt(dst, value, "0x%04X");
 }
 
 void printUnsignedConstantMIPS1(int value, String* dst, DismSettings* config) {
-  dst->catInt(dst, value, "%04X");
+  dst->catInt(dst, value, "0x%04X");
 }
 
 void printOffsetMIPS1(int value, int base, String* dst, DismSettings* config) {
 /*  dst->catInt(dst, value, "%04X"); */
   value *= 4;
   if (value < 0) {
-    dst->catInt(dst, -value, "-$%02X");
-    dst->catInt(dst, base - (-value) + config->fileLoadAddr, " [$%X]");
+/*    dst->catInt(dst, -value, "-0x%02X");
+    dst->catInt(dst, base - (-value), " [$%08X]"); */
+    dst->catInt(dst, base - (-value), "0x%X");
   }
   else {
-    dst->catInt(dst, value, "+$%02X");
-    dst->catInt(dst, value + base + config->fileLoadAddr, " [$%X]");
+/*    dst->catInt(dst, value, "+0x%02X");
+    dst->catInt(dst, value + base, " [$%08X]"); */
+    dst->catInt(dst, value + base, "0x%X");
   }
 }
 
@@ -194,12 +199,14 @@ void printShiftAmountMIPS1(int value, String* dst, DismSettings* config) {
   dst->catInt(dst, value, "%d");
 }
 
-void printAddressMIPS1(int value, String* dst, DismSettings* config) {
+void printAddressMIPS1(int value, int base, String* dst, DismSettings* config) {
   /* High 4 bits and low 2 bits of PC aren't known */
   value <<= 2;
+  value = (base & 0xF0000000) | value;
   
 /*  dst->catC(dst, "X"); */
-  dst->catInt(dst, value, "$%07X");
+/*  dst->catInt(dst, value, "0x%07X"); */
+  dst->catInt(dst, value, "0x%X");
 }
 
 void setParameterMIPS1(SubDataMIPS1* dat, MapSS* args, char code, int num) {
@@ -434,11 +441,13 @@ void printParameterMIPS1(SubDataMIPS1* dat, Opcode* obj,  String* dst,
     break;
   /* offset */
   case 'l':
-    printOffsetMIPS1(*target, obj->pos_ + 4, dst, config);
+    printOffsetMIPS1(*target, obj->pos_ + config->fileLoadAddr + 4,
+                     dst, config);
     break;
   /* absolute label */
   case 'L':
-    printAddressMIPS1(*target, dst, config);
+    printAddressMIPS1(*target, obj->pos_ + config->fileLoadAddr,
+                      dst, config);
     break;
   default:
     {

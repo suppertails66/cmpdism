@@ -467,7 +467,6 @@ OpcodeAlignmentData DismModuledetectNewAlignment(DismModule* obj,
                                  unsigned int limit,
                                  unsigned int seqLen,
                                  unsigned int maxDist) {
-  
   OpcodeAlignmentData result;
   memset(&result, 0, sizeof(OpcodeAlignmentData));
   
@@ -562,13 +561,14 @@ OpcodeAlignmentData DismModuledetectOpcodeAddition(struct DismModule* obj,
      If there is enough room in the opcode stream, we go to the maximum
      distance allowed by the settings. Otherwise, we truncate the check window
      to fit within the stream. */
-  limit = ((iB + realDist) < limit)
-            ? (iB + seqLen)
-            : (limit - seqLen);
+  unsigned int checkLimit = (iB + maxDist);
+  if ((iB + realDist) >= limit) {
+    checkLimit = limit - seqLen;
+  }
             
   /* Check each opcode for realignment */
   unsigned int i;
-  for (i = iB; i < limit; i++) {
+  for (i = iB; i < checkLimit; i++) {
     if (obj->matchSeq(obj, dismStructA, dismStructB, iA, i, seqLen)) {
       result.iA = iA;
       result.iB = i;

@@ -694,11 +694,11 @@ void print2bConstantZ80(int value, String* dst, DismSettings* config) {
 void printOffsetZ80(int value, int base, String* dst, DismSettings* config) {
   if (value & 0x80) {
     dst->catInt(dst, 0x100 - value, "-$%02X");
-    dst->catInt(dst, base - (0x100 - value) + config->fileLoadAddr, " [$%X]");
+    dst->catInt(dst, base - (0x100 - value), " [$%X]");
   }
   else {
     dst->catInt(dst, value, "+$%02X");
-    dst->catInt(dst, value + base + config->fileLoadAddr, " [$%X]");
+    dst->catInt(dst, value + base, " [$%X]");
   }
   
 }
@@ -874,7 +874,7 @@ int printParameterZ80(const Opcode* obj,
     break;
   /* offset */
   case 'O':
-      printOffsetZ80(value, obj->pos_ + 2, dst, config);
+      printOffsetZ80(value, obj->loadAddr_ + 2, dst, config);
     break;
   /* address */
   case 'L':

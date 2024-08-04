@@ -31,6 +31,11 @@ typedef struct {
    * Vector of Opcodes representing the disassembled stream.
    */
   VectorOpcode opcodes;
+  
+  /**
+   * The starting address of disassembly within the stream.
+   */
+  int fileBasePos;
 
 } DismStruct;
 

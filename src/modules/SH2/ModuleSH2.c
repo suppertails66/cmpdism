@@ -641,8 +641,8 @@ void printOpcodeArgSH2(Opcode* obj, String* dst, DismSettings* config,
   case addrModeSH2AtDisp4Rm:
     dst->catC(dst, "@(");
     /* zero-extended = uint */
-    printDisp4SH2(getMapSSValueAsBinaryUint(args, "d"), obj->pos(obj), wsize,
-                  dst, config);
+    printDisp4SH2(getMapSSValueAsBinaryUint(args, "d"), obj->loadAddr(obj),
+                  wsize, dst, config);
     dst->catC(dst, ",");
     if (addressMode == addrModeSH2AtDisp4Rn) {
       printIndexedRegisterSH2(
@@ -670,7 +670,7 @@ void printOpcodeArgSH2(Opcode* obj, String* dst, DismSettings* config,
   case addrModeSH2AtDisp8GBR:
     dst->catC(dst, "@(");
     /* zero-extended = uint */
-    printDisp8SH2(getMapSSValueAsBinaryUint(args, "d"), obj->pos(obj),
+    printDisp8SH2(getMapSSValueAsBinaryUint(args, "d"), obj->loadAddr(obj),
                   wsize, dst, config);
     dst->catC(dst, ",GBR");
     break;
@@ -680,21 +680,21 @@ void printOpcodeArgSH2(Opcode* obj, String* dst, DismSettings* config,
   case addrModeSH2AtDisp8PC:
     dst->catC(dst, "@(");
     /* zero-extended = uint */
-    printDisp8SH2(getMapSSValueAsBinaryUint(args, "d"), obj->pos(obj),
+    printDisp8SH2(getMapSSValueAsBinaryUint(args, "d"), obj->loadAddr(obj),
                   wsize, dst, config);
     dst->catC(dst, ",PC)");
     break;
   case addrModeSH2Disp8:
     /* sign-extended = sint */
     /* the "word size" is 2 here because the displacement is always doubled */
-    printSignedDisp8SH2(getMapSSValueAsBinaryInt(args, "d"), obj->pos(obj),
+    printSignedDisp8SH2(getMapSSValueAsBinaryInt(args, "d"), obj->loadAddr(obj),
                         2, dst, config);
     break;
   case addrModeSH2Disp12:
     /* sign-extended = sint */
     /* the "word size" is 2 here because the displacement is always doubled */
-    printSignedDisp12SH2(getMapSSValueAsBinaryInt(args, "d"), obj->pos(obj),
-                         2, dst, config);
+    printSignedDisp12SH2(getMapSSValueAsBinaryInt(args, "d"),
+                         obj->loadAddr(obj), 2, dst, config);
     break;
   case addrModeSH2PCRn:
     /* ? */
@@ -970,7 +970,8 @@ int ModuleSH2tryOpRead(DismModule* obj, DismStruct* dismStruct,
           opcode.info_, &opcode, &(dismStruct->settings));
       int result = opcode.read(
         &opcode, dismStruct->stream, &(dismStruct->settings),
-          NULL);
+          NULL,
+          dismStruct->fileBasePos);
       dismStruct->opcodes.pushBack(&(dismStruct->opcodes), opcode);
       dismStruct->stream->seekOff(dismStruct->stream, result);
       return result;
@@ -1048,9 +1049,9 @@ void ModuleSH2printComparedDisassemblyConsts(DismModule* obj, String* dst,
             && (((unsigned int)valueA < 0x06000000)
                 || ((unsigned int)valueA >= 0x80000000))) {
           
-          dst->catInt(dst, opcodeA->pos_, "%08X");
+          dst->catInt(dst, opcodeA->loadAddr_, "%08X");
           dst->catC(dst, " ");
-          dst->catInt(dst, opcodeB->pos_, "%08X");
+          dst->catInt(dst, opcodeB->loadAddr_, "%08X");
           dst->catC(dst, " ");
         
           if ((opInfoA->id == DATA_WORD_ID)) {
@@ -1193,9 +1194,9 @@ void ModuleSH2printComparedDisassemblyImmeds(DismModule* obj, String* dst,
         /* Value mismatch -- screen for Saturn addresses */
         if (valueA != valueB) {
           
-          dst->catInt(dst, opcodeA->pos_, "%08X");
+          dst->catInt(dst, opcodeA->loadAddr_, "%08X");
           dst->catC(dst, " ");
-          dst->catInt(dst, opcodeB->pos_, "%08X");
+          dst->catInt(dst, opcodeB->loadAddr_, "%08X");
           dst->catC(dst, " ");
         
           dst->catC(dst, "B ");

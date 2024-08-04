@@ -169,7 +169,7 @@ void printString65C02ZPRel(Opcode* obj, String* dst,
   print1bAddress6502Raw(dst, dat->value1, config);
   dst->catC(dst, ",");
   print1bRelative6502Raw(dst, dat->value2, config,
-                         obj->pos(obj) + 3);
+                         obj->loadAddr(obj) + 3);
   dst->catC(dst, ")");
 }
 

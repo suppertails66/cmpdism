@@ -441,12 +441,12 @@ void printParameterMIPS1(SubDataMIPS1* dat, Opcode* obj,  String* dst,
     break;
   /* offset */
   case 'l':
-    printOffsetMIPS1(*target, obj->pos_ + config->fileLoadAddr + 4,
+    printOffsetMIPS1(*target, obj->loadAddr_ + 4,
                      dst, config);
     break;
   /* absolute label */
   case 'L':
-    printAddressMIPS1(*target, obj->pos_ + config->fileLoadAddr,
+    printAddressMIPS1(*target, obj->loadAddr_,
                       dst, config);
     break;
   default:

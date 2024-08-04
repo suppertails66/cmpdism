@@ -18,8 +18,10 @@ int OpcodeisFunctionallyCongruent(struct Opcode* obj, struct Opcode* other) {
 }
 
 unsigned int Opcoderead(Opcode* obj, BufferStream* stream,
-                        DismSettings* config, MapSS* args) {
+                        DismSettings* config, MapSS* args,
+                        int streamBasePos) {
   obj->pos_ = stream->pos(stream);
+  obj->loadAddr_ = stream->pos(stream) - streamBasePos + config->fileLoadAddr;
   return obj->readStep(obj, stream, config, args);
 }
                         
@@ -42,7 +44,7 @@ void Opcodeprint(Opcode* obj, String* dst,
   fmt.catString(&fmt, &temp);
   fmt.catC(&fmt, "X");
   /* Print address with the specified padding */
-  temp.fromInt(&temp, obj->pos_ + config->fileLoadAddr, fmt.cStr(&fmt));
+  temp.fromInt(&temp, obj->loadAddr_, fmt.cStr(&fmt));
   dst->catC(dst, temp.cStr(&temp));
   dst->catC(dst, " ");
   
@@ -112,6 +114,10 @@ unsigned int Opcodepos(Opcode* obj) {
   return obj->pos_;
 }
 
+unsigned int OpcodeloadAddr(Opcode* obj) {
+  return obj->loadAddr_;
+}
+
 OpInfo* Opcodeinfo(Opcode* obj) {
   return obj->info_;
 }
@@ -127,6 +133,7 @@ void initOpcode(Opcode* obj) {
   obj->data = Opcodedata;
   obj->setData = OpcodesetData;
   obj->pos = Opcodepos;
+  obj->loadAddr = OpcodeloadAddr;
   obj->info = Opcodeinfo;
   obj->readStep = NULL;
   obj->print = Opcodeprint;

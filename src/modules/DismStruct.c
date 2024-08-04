@@ -6,6 +6,7 @@ void initDismStruct(DismStruct* obj) {
 /*  obj->codeMap = allocCodeMap(); */
   obj->codeMap = NULL;
   initVectorOpcode(&(obj->opcodes));
+  obj->fileBasePos = 0;
 }
 
 DismStruct* allocDismStruct() {

@@ -87,13 +87,16 @@ typedef struct Opcode {
    * @see collateOpArgs()
    */
   unsigned int (*read)(struct Opcode* obj, BufferStream* stream,
-                         DismSettings* config, MapSS* args);
+                         DismSettings* config, MapSS* args,
+                         int streamBasePos);
   
   void* (*data)(struct Opcode* obj);
   
   void (*setData)(struct Opcode* obj, void* data__);
   
   unsigned int (*pos)(struct Opcode* obj);
+  
+  unsigned int (*loadAddr)(struct Opcode* obj);
   
   OpInfo* (*info)(struct Opcode* obj);
 
@@ -186,6 +189,11 @@ typedef struct Opcode {
    * The position at which the Opcode was read from the bytestream.
    */
   unsigned int pos_;
+  
+  /**
+   * The address at which the Opcode is loaded in memory.
+   */
+  unsigned int loadAddr_;
 
 } Opcode;
 
@@ -196,7 +204,8 @@ int OpcodeisFunctionallyCongruent(struct Opcode* obj, struct Opcode* other);
  * Default implementation for read().
  */
 unsigned int Opcoderead(Opcode* obj, BufferStream* stream,
-                        DismSettings* config, MapSS* args);
+                        DismSettings* config, MapSS* args,
+                        int streamBasePos);
                         
 void Opcodeprint(Opcode* obj, String* dst,
                  BufferStream* stream,
@@ -216,6 +225,8 @@ void* Opcodedata(Opcode* obj);
 void OpcodesetData(Opcode* obj, void* data__);
 
 unsigned int Opcodepos(Opcode* obj);
+
+unsigned int OpcodeloadAddr(Opcode* obj);
 
 OpInfo* Opcodeinfo(Opcode* obj);
 

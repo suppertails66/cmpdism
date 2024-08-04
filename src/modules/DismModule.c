@@ -22,6 +22,7 @@ void DismModulerun(DismModule* obj, DismSettings config) {
   firstDismStruct->settings = config;
   firstDismStruct->stream->load(firstDismStruct->stream,
                                 config.firstFile);
+  firstDismStruct->fileBasePos = config.firstFileStartOffset;
   
   /* One-file mode */
   if (config.secondFile == NULL) {
@@ -43,6 +44,7 @@ void DismModulerun(DismModule* obj, DismSettings config) {
     secondDismStruct->settings = config;
     secondDismStruct->stream->load(secondDismStruct->stream,
                                   config.secondFile);
+    secondDismStruct->fileBasePos = config.secondFileStartOffset;
     
     /* Generate code maps if needed */
     if (config.intelligentCodeDetection) {
@@ -686,7 +688,8 @@ void DismModulereadNextOp(DismModule* obj, DismStruct* dismStruct,
           &dataOpInfo, &opcode, &(dismStruct->settings));
       opcode.info_ = &dataOpInfo;
       int offset = opcode.read(
-          &opcode, dismStruct->stream, &(dismStruct->settings), NULL);
+          &opcode, dismStruct->stream, &(dismStruct->settings), NULL,
+          dismStruct->fileBasePos);
       dismStruct->stream->seekOff(dismStruct->stream, offset);
       dismStruct->opcodes.pushBack(&(dismStruct->opcodes), opcode);
     }
@@ -730,7 +733,8 @@ int DismModuletryOpRead(DismModule* obj, DismStruct* dismStruct,
       
       result = opcode.read(
         &opcode, dismStruct->stream, &(dismStruct->settings),
-          (obj->enableOpArgCollation_) ? args : NULL);
+          (obj->enableOpArgCollation_) ? args : NULL,
+          dismStruct->fileBasePos);
       
       if (result) {
         /* Add Opcode to disassembly stream */

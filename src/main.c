@@ -42,7 +42,7 @@ void printProgramHelp() {
 "\t\t\t\tdifference (default).\n"
 "  --constants-similar\t\tRegards changed constants as a nondistinctive\n"
 "\t\t\t\tdifference.\n"
-"  --raw-bytes\t\t\tPrints raw byte representatino of disassembled\n"
+"  --raw-bytes\t\t\tPrints raw byte representation of disassembled\n"
 "\t\t\t\tcontent.\n"
 "  --generate-codemaps\t\tAttempts to distinguish code from data.\n"
 "  --codemap-seq-req\t\tSets number of sequential valid ops required\n"

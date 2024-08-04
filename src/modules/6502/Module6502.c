@@ -276,7 +276,7 @@ int read1bRelative6502(Opcode* dst, BufferStream* stream,
 
 void print1bAddress6502(String* dst, Opcode* src,
                       DismSettings* config) {
-  print2bAddress6502Raw(dst, (unsigned int)singleValue6502(src), config);
+  print1bAddress6502Raw(dst, (unsigned int)singleValue6502(src), config);
 }
 
 void print2bAddress6502(String* dst, Opcode* src,
